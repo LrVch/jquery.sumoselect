@@ -69,7 +69,7 @@
 
                 createElems: function () {
                     var O = this;
-                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
+                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="combobox" aria-expanded="false" >');
                     O.select = O.E.parent();
                     O.caption = $('<span>');
                     O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
