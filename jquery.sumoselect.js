@@ -69,16 +69,18 @@
 
                 createElems: function () {
                     var O = this;
-                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="combobox" aria-expanded="false" >');
+                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="true">');
+                    // O.E.wrap('<div class="SumoSelect" role="combobox" aria-expanded="false" aria-haspopup="true">');
                     O.select = O.E.parent();
                     O.caption = $('<span>');
+                    // O.CaptionCont = $('<p class="CaptionCont SelectBox" tabindex="0" ><label><i></i></label></p>')
                     O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
                         .attr('style', O.E.attr('style'))
                         .prepend(O.caption);
                     O.select.append(O.CaptionCont);
 
                     // default turn off if no multiselect
-                    if(!O.is_multi)settings.okCancelInMulti = false
+                    if(!O.is_multi)settings.okCancelInMulti = false;
 
                     if(O.E.attr('disabled'))
                         O.select.addClass('disabled').removeAttr('tabindex');
@@ -111,7 +113,12 @@
                     O.floatingList();
 
                     //Creating the markup for the available options
-                    O.ul = $('<ul class="options">');
+                    O.ul = $('<ul class="options" role="tree" aria-expanded="false" aria-hidden="true" >');
+
+                    if (O.is_multi) {
+                        O.ul.attr('aria-multiselectable', true);
+                    }
+
                     O.optDiv.append(O.ul);
 
                     // Select all functionality
@@ -135,7 +142,7 @@
                     $(opts).each(function (i, opt) {       // parsing options to li
                         opt = $(opt);
                         lis.push(opt.is('optgroup')?
-                            $('<li class="group '+ (opt[0].disabled?'disabled':'') +'"><label>' + opt.attr('label') +'</label><ul></ul></li>')
+                            $('<li class="group '+ (opt[0].disabled?'disabled':' ') +'" role="group" aria-label="' + opt.attr('label') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
                             .find('ul')
                             .append(O.prepItems(opt.children(), opt[0].disabled))
                             .end()
@@ -152,19 +159,19 @@
                     var O = this;
 
                     if(!opt.attr('value'))opt.attr('value',opt.val());
-                    var li = $('<li class="opt"><label>' + opt.text() + '</label></li>');
-
+                    var li = $('<li class="opt" role="treeitem" tabindex="-1" aria-selected="false" aria-disabled="false"><label>' + opt.text() + '</label></li>');
+                    li.attr('aria-label', opt.text());
                     li.data('opt', opt);    // store a direct reference to option.
                     opt.data('li', li);    // store a direct reference to list item.
                     if (O.is_multi) li.prepend('<span><i></i></span>');
 
                     if (opt[0].disabled || d)
-                        li = li.addClass('disabled');
+                        li = li.addClass('disabled').attr('aria-disabled', true);
 
                     O.onOptClick(li);
 
                     if (opt[0].selected)
-                        li.addClass('selected');
+                        li.addClass('selected').attr('aria-selected', true);
 
                     if (opt.attr('class'))
                         li.addClass(opt.attr('class'));
@@ -178,7 +185,7 @@
                 //## Returns the selected items as string in a Multiselect.
                 getSelStr: function () {
                     // get the pre selected items.
-                    sopt = [];
+                    var sopt = [];
                     this.E.find('option:selected').each(function () { sopt.push($(this).val()); });
                     return sopt.join(settings.csvSepChar);
                 },
@@ -240,16 +247,17 @@
                         }
                     }
                 },
+
                 _cnbtn:function(){
                     var O = this;
                     //remove all selections
                     O.E.find('option:selected').each(function () { this.selected = false; });
-                    O.optDiv.find('li.selected').removeClass('selected')
+                    O.optDiv.find('li.selected').removeClass('selected').attr('aria-selected', false);
 
                     //restore selections from saved state.
                     for(var i = 0; i < O.Pstate.length; i++) {
                         O.E.find('option')[O.Pstate[i]].selected = true;
-                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected');
+                        O.ul.find('li.opt').eq(O.Pstate[i]).addClass('selected').attr('aria-selected', true);
                     }
                     O.selAllState();
                 },
@@ -316,10 +324,17 @@
                     O.E.trigger('sumo:opening', O);
                     O.is_opened = true;
                     O.select.addClass('open').attr('aria-expanded', 'true');
+                    O.ul.attr('aria-expanded', true).attr('aria-hidden', false);
                     O.E.trigger('sumo:opened', O);
 
-                    if(O.ftxt)O.ftxt.focus();
-                    else O.select.focus();
+                    // handle focus here
+                    if(O.ftxt) {
+                        O.ftxt.focus();
+                    } else {
+                        // O.select.focus();
+                        // set focus on first sel li
+                        O.optDiv.find('li.sel').first().focus();
+                    }
 
                     // hide options on click outside.
                     $(document).on('click.sumo', function (e) {
@@ -337,7 +352,7 @@
                     });
 
                     if (O.is_floating) {
-                        H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
+                        var H = O.optDiv.children('ul').outerHeight() + 2;  // +2 is clear fix
                         if (O.is_multi) H = H + parseInt(O.optDiv.css('padding-bottom'));
                         O.optDiv.css('height', H);
                         $('body').addClass('sumoStopScroll');
@@ -358,6 +373,7 @@
 
                 callChange:function(){
                     this.E.trigger('change').trigger('click');
+                    console.log('callChange');
                 },
 
                 hideOpts: function () {
@@ -365,7 +381,8 @@
                     if(O.is_opened){
                         O.E.trigger('sumo:closing', O);
                         O.is_opened = false;
-                        O.select.removeClass('open').attr('aria-expanded', 'true').find('ul li.sel').removeClass('sel');
+                        O.select.removeClass('open').attr('aria-expanded', 'false').find('ul li.sel').removeClass('sel');
+                        O.ul.attr('aria-expanded', false).attr('aria-hidden', true);
                         O.E.trigger('sumo:closed', O);
                         $(document).off('click.sumo');
                         O.select.focus();
@@ -378,20 +395,23 @@
                         }
                     }
                 },
+
                 setOnOpen: function () {
                     var O = this,
-                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search?0:O.E[0].selectedIndex);
+                        li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search? 0 : O.E[0].selectedIndex >= 0 ? O.E[0].selectedIndex : 0);
+
                     if(li.hasClass('disabled')){
-                        li = li.next(':not(disabled)')
+                        li = li.next(':not(disabled)');
                         if(!li.length) return;
                      }
                     O.optDiv.find('li.sel').removeClass('sel');
                     li.addClass('sel');
                     O.showOpts();
                 },
+
                 nav: function (up) {
                     var O = this, c,
-                    s=O.ul.find('li.opt:not(.disabled, .hidden)'),
+                    s = O.ul.find('li.opt:not(.disabled, .hidden)'),
                     sel = O.ul.find('li.opt.sel:not(.hidden)'),
                     idx = s.index(sel);
                     if (O.is_opened && sel.length) {
@@ -403,7 +423,7 @@
                         else return; // if no items before or after
 
                         sel.removeClass('sel');
-                        sel = c.addClass('sel');
+                        sel = c.addClass('sel').focus();
 
                         // setting sel item to visible view.
                         var ul = O.ul,
@@ -482,11 +502,19 @@
                         if (O.is_multi) {
                             li.toggleClass('selected');
                             li.data('opt')[0].selected = li.hasClass('selected');
+
+                            if (li.hasClass('selected')) {
+                                li.attr('aria-selected', true);
+                                O.optDiv.find('li').attr('tabindex', '-1');
+                                li.attr('tabindex', '0').focus();
+                            } else {
+                                li.attr('aria-selected', false);
+                            }
                             O.selAllState();
                         }
                         else {
-                            li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
-                            li.toggleClass('selected');
+                            li.parent().find('li.selected').removeClass('selected').attr('aria-selected', false).attr('tabindex', '-1'); //if not multiselect then remove all selections from this list
+                            li.toggleClass('selected').attr('aria-selected', true).attr('tabindex', '0');
                             li.data('opt')[0].selected = true;
                         }
 
@@ -504,9 +532,9 @@
                     var O = this;
                     O.placeholder = "";
                     if (O.is_multi) {
-                        sels = O.E.find(':selected').not(':disabled'); //selected options.
+                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
 
-                        for (i = 0; i < sels.length; i++) {
+                        for (var i = 0; i < sels.length; i++) {
                             if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
                                 if (sels.length == O.E.find('option').length && settings.captionFormatAllSelected) {
                                     O.placeholder = settings.captionFormatAllSelected.replace(/\{0\}/g, sels.length)+',';
