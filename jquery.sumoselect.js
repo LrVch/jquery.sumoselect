@@ -789,6 +789,10 @@
                             }
                         });
 
+
+                    O.optDiv.find('li.opt').attr('tabindex', '-1');
+                    O.optDiv.find('li.sel').attr('tabindex', '0').focus();
+
                     if (!direct) {
                         if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
                         O.callChange();
