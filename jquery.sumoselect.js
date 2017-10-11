@@ -197,12 +197,12 @@
                 multiSelelect: function () {
                     var O = this;
                     O.optDiv.addClass('multiple');
-                    O.okbtn = $('<p tabindex="0" class="btnOk">' + settings.locale[0] + '</p>').click(function () {
+                    O.okbtn = $('<p tabindex="0" class="btnOk" role="button">' + settings.locale[0] + '</p>').click(function () {
                         //if combined change event is set.
                         O._okbtn();
                         O.hideOpts();
                     });
-                    O.cancelBtn = $('<p tabindex="0" class="btnCancel">' + settings.locale[1] + '</p>').click(function () {
+                    O.cancelBtn = $('<p tabindex="0" class="btnCancel" role="button">' + settings.locale[1] + '</p>').click(function () {
                         O._cnbtn();
                         O.hideOpts();
                     });
@@ -219,7 +219,8 @@
                                 break;
 
                             case 9:  //tab
-                                if (el.hasClass('btnOk'))return;
+                                return;
+                                // if (el.hasClass('btnOk')) return;
                             case 27: // esc
                                 O._cnbtn();
                                 O.hideOpts();
@@ -405,9 +406,8 @@
                         O.ul.attr('aria-expanded', false).attr('aria-hidden', true);
                         O.E.trigger('sumo:closed', O);
                         $(document).off('click.sumo');
-                        // O.select.focus();
-                        O.CaptionCont.focus();
                         $('body').removeClass('sumoStopScroll');
+                        O.CaptionCont.focus();
 
                         // clear the search
                         if (settings.search) {
@@ -517,7 +517,17 @@
                     var O = this;
                     O.CaptionCont.click(function (evt) {
                         O.E.trigger('click');
-                        if (O.is_opened) O.hideOpts(); else O.showOpts();
+                        if (O.is_opened) {
+                            if (settings.okCancelInMulti) {
+                                if (settings.isClickAwayOk)
+                                    O._okbtn();
+                                else
+                                    O._cnbtn();
+                            }
+                            O.hideOpts();
+                        } else {
+                            O.showOpts();
+                        }
                         evt.stopPropagation();
                     });
 
@@ -574,8 +584,9 @@
                                 }
                                 break;
                             case 9:	 //tab
-                                if (!settings.okCancelInMulti)
+                                if (!settings.okCancelInMulti) {
                                     O.hideOpts();
+                                }
                                 return;
                             case 27: // esc
                                 if (settings.okCancelInMulti) O._cnbtn();
@@ -940,6 +951,5 @@
 
         return ret.length == 1 ? ret[0] : ret;
     };
-
 
 });
