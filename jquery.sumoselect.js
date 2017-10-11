@@ -45,7 +45,7 @@
             prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
             locale: ['OK', 'Cancel', 'Select All'],  // all text that is used. don't change the index.
             up: false,                    // set true to open upside.
-            showTitle: true               // set to false to prevent title (tooltip) from appearing
+            showTitle: false               // set to false to prevent title (tooltip) from appearing
         }, options);
 
         var ret = this.each(function () {
@@ -69,12 +69,10 @@
 
                 createElems: function () {
                     var O = this;
-                    O.E.wrap('<div class="SumoSelect" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="true">');
-                    // O.E.wrap('<div class="SumoSelect" role="combobox" aria-expanded="false" aria-haspopup="true">');
+                    O.E.wrap('<div class="SumoSelect" >');
                     O.select = O.E.parent();
                     O.caption = $('<span>');
-                    // O.CaptionCont = $('<p class="CaptionCont SelectBox" tabindex="0" ><label><i></i></label></p>')
-                    O.CaptionCont = $('<p class="CaptionCont SelectBox" ><label><i></i></label></p>')
+                    O.CaptionCont = $('<p class="CaptionCont SelectBox" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="true"><label><i></i></label></p>')
                         .attr('style', O.E.attr('style'))
                         .prepend(O.caption);
                     O.select.append(O.CaptionCont);
@@ -82,8 +80,10 @@
                     // default turn off if no multiselect
                     if(!O.is_multi)settings.okCancelInMulti = false;
 
-                    if(O.E.attr('disabled'))
+                    if(O.E.attr('disabled')) {
                         O.select.addClass('disabled').removeAttr('tabindex');
+                        O.CaptionCont.attr('aria-disabled', true);
+                    }
 
                     //if output as csv and is a multiselect.
                     if (settings.outputAsCSV && O.is_multi && O.E.attr('name')) {
@@ -318,12 +318,15 @@
                     }
                 },
 
+                // !!!!!!!!!!!!!!!
+                // показывает дропдаун и устанавливает начальный фокус
                 showOpts: function () {
                     var O = this;
                     if (O.E.attr('disabled')) return; // if select is disabled then retrun
                     O.E.trigger('sumo:opening', O);
                     O.is_opened = true;
-                    O.select.addClass('open').attr('aria-expanded', 'true');
+                    O.select.addClass('open');
+                    O.CaptionCont.attr('aria-expanded', true);
                     O.ul.attr('aria-expanded', true).attr('aria-hidden', false);
                     O.E.trigger('sumo:opened', O);
 
@@ -371,21 +374,26 @@
                     }
                 },
 
+                // !!!!!!!!!!!!!!!
                 callChange:function(){
                     this.E.trigger('change').trigger('click');
                     console.log('callChange');
                 },
 
+                // !!!!!!!!!!!!!!!
+                // скрывает дропдаун и устанавливает фокус на корень
                 hideOpts: function () {
                     var O = this;
                     if(O.is_opened){
                         O.E.trigger('sumo:closing', O);
                         O.is_opened = false;
-                        O.select.removeClass('open').attr('aria-expanded', 'false').find('ul li.sel').removeClass('sel');
+                        O.select.removeClass('open').find('ul li.sel').removeClass('sel').attr('tabindex', '-1');
+                        O.CaptionCont.attr('aria-expanded', 'false');
                         O.ul.attr('aria-expanded', false).attr('aria-hidden', true);
                         O.E.trigger('sumo:closed', O);
                         $(document).off('click.sumo');
-                        O.select.focus();
+                        // O.select.focus();
+                        O.CaptionCont.focus();
                         $('body').removeClass('sumoStopScroll');
 
                         // clear the search
@@ -396,6 +404,9 @@
                     }
                 },
 
+                // !!!!!!!!!!!!!!!
+                // используется только с клавиатуры
+                // уставливает класс выделения и фокус
                 setOnOpen: function () {
                     var O = this,
                         li = O.optDiv.find('li.opt:not(.hidden)').eq(settings.search? 0 : O.E[0].selectedIndex >= 0 ? O.E[0].selectedIndex : 0);
@@ -404,11 +415,13 @@
                         li = li.next(':not(disabled)');
                         if(!li.length) return;
                      }
-                    O.optDiv.find('li.sel').removeClass('sel');
-                    li.addClass('sel');
+                    O.optDiv.find('li.sel').removeClass('sel').attr('tabindex', '-1');
+                    li.addClass('sel').attr('tabindex', '0');
                     O.showOpts();
                 },
 
+                // !!!!!!!!!!!!!!!
+                // переключение выделенного пункта с клавы
                 nav: function (up) {
                     var O = this, c,
                     s = O.ul.find('li.opt:not(.disabled, .hidden)'),
@@ -439,6 +452,8 @@
                         O.setOnOpen();
                 },
 
+                // !!!!!!!!!!!!!!!
+                // основные евенты
                 basicEvents: function () {
                     var O = this;
                     O.CaptionCont.click(function (evt) {
@@ -447,7 +462,12 @@
                         evt.stopPropagation();
                     });
 
+                    O.CaptionCont.on('keydown', function (e) {
+                        console.log('CaptionCont keydown');
+                    });
+
                     O.select.on('keydown.sumo', function (e) {
+                        console.log('select keydown');
                         switch (e.which) {
                             case 38: // up
                                 O.nav(true);
@@ -493,6 +513,8 @@
                     });
                 },
 
+                // !!!!!!!!!!!!!!!
+                // клик на элемент списка
                 onOptClick: function (li) {
                     var O = this;
                     li.click(function () {
@@ -613,6 +635,7 @@
                     O.optDiv.toggleClass('okCancelInMulti', settings.okCancelInMulti && !O.is_floating);
                 },
 
+                /**************************************************************/
                 //HELPERS FOR OUTSIDERS
                 // validates range of given item operations
                 vRange: function (i) {
@@ -699,6 +722,7 @@
                     }
                 },
 
+                /**************************************************************/
                 /* outside accessibility options
                  which can be accessed from the element instance.
                  */
@@ -785,7 +809,7 @@
                     var O = this;
                     O.createElems();
                     O.setText();
-                    return O
+                    return O;
                 }
 
             };
