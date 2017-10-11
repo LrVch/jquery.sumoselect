@@ -75,7 +75,7 @@
                     O.CaptionCont = $('<p class="CaptionCont SelectBox" role="combobox" aria-expanded="false" aria-haspopup="true"><label><i></i></label></p>')
                         .attr('style', O.E.attr('style'))
                         .prepend(O.caption);
-                    O.CaptionCont.attr('tabindex', O.E.attr('tabindex')|| 0);
+                    O.CaptionCont.attr('tabindex', O.E.attr('tabindex') || 0);
                     O.select.append(O.CaptionCont);
 
                     // default turn off if no multiselect
@@ -312,14 +312,22 @@
                     var O = this;
                     if (settings.selectAll && O.is_multi) {
                         var sc = 0, vc = 0;
+                        var dc = 0;
+
                         O.optDiv.find('li.opt').not('.hidden').each(function (ix, e) {
                             if ($(e).hasClass('selected')) sc++;
                             if (!$(e).hasClass('disabled')) vc++;
+                            if ($(e).hasClass('disabled selected')) dc++;
                         });
+
                         //select all checkbox state change.
-                        if (sc == vc) O.selAll.removeClass('partial').addClass('selected');
-                        else if (sc == 0) O.selAll.removeClass('selected partial');
-                        else O.selAll.addClass('partial')//.removeClass('selected');
+                        if (sc == vc + dc) {
+                            O.selAll.removeClass('partial').addClass('selected');
+                        } else if (sc == 0) {
+                            O.selAll.removeClass('selected partial');
+                        } else {
+                            O.selAll.addClass('partial')
+                        }//.removeClass('selected');
                     }
                 },
 
@@ -338,11 +346,8 @@
                     // handle focus here
                     if (O.ftxt && !fromNav) {
                         O.ftxt.focus();
-                        console.log('set f')
                     } else {
-                        // O.select.focus();
                         // set focus on first sel li
-                        console.log('O.optDiv.find(\'li.sel\')', O.optDiv.find('li.sel'));
                         O.optDiv.find('li.sel').first().focus();
                     }
 
@@ -386,7 +391,6 @@
                 // !!!!!!!!!!!!!!!
                 callChange: function () {
                     this.E.trigger('change').trigger('click');
-                    console.log('callChange');
                 },
 
                 // !!!!!!!!!!!!!!!
@@ -471,7 +475,8 @@
                 nav: function (up, fromNav) {
                     var O = this, c,
                         s = O.ul.find('li.opt:not(.disabled, .hidden)'),
-                        sel = O.ul.find('li.opt.sel:not(.hidden)'),
+                        selItem = O.ul.find('li.opt.sel:not(.hidden)'),
+                        sel = selItem.length ? selItem : O.ul.find('li[tabindex*="0"]'),
                         idx = s.index(sel);
 
                     if (O.is_opened && sel.length) {
@@ -606,6 +611,14 @@
                             } else {
                                 li.attr('aria-selected', false);
                             }
+
+                            var selLi = O.optDiv.find('li.sel');
+
+                            if (selLi.length) {
+                                selLi.removeClass('sel');
+                                li.addClass('sel');
+                            }
+
                             li.attr('tabindex', '0').focus();
                             O.selAllState();
                         }
@@ -776,6 +789,9 @@
                 // set direct=false/0 bypasses okCancelInMulti behaviour.
                 toggSelAll: function (c, direct) {
                     var O = this;
+                    var selItem = O.optDiv.find('li.sel');
+                    var selected = selItem.length ? selItem : O.ul.find('li[tabindex*="0"]');
+
                     O.E.find('option:not(:disabled,:hidden)')
                         .each(function (ix, e) {
                             var is_selected = e.selected,
@@ -790,9 +806,14 @@
                         });
 
 
-                    O.optDiv.find('li.opt').attr('tabindex', '-1');
-                    O.optDiv.find('li.sel').attr('tabindex', '0').focus();
+                    O.optDiv.find('li.opt').removeClass('sel').attr('tabindex', '-1');
+                    selected.attr('tabindex', '0').focus();
 
+                    if (selItem.length) {
+                        selected.addClass('sel');
+                    }
+
+                    // for external use
                     if (!direct) {
                         if (!O.mob && O.selAll) O.selAll.removeClass('partial').toggleClass('selected', !!c);
                         O.callChange();
