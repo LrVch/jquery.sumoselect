@@ -863,17 +863,11 @@
                                 }
                             });
                     } else {
-                        // console.log([].slice.call(O.E[0].querySelectorAll('option')).toString())
-                        // var temp = [];
                         O.E.find('option:not(:disabled)')
                             .each(function (i, e) {
                                 // temp.push(e.value)
                                 e.selected = !!c;
                             });
-
-                        // $('.mob-view-cont').html(temp.join(', '));
-                        // alert(temp.join(', '))
-                        // alert(O.E.find('option:not(:disabled,:hidden)').length);
                     }
 
 
