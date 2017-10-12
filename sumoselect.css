@@ -163,15 +163,15 @@
 }
 
 .scroll-element .scroll-element_track {
-    background-color: green;
+    background-color: #E4E4E4;
 }
 .scroll-element .scroll-bar {
-    background-color: red;
+    background-color: #7f7e7e;
 }
 
 .scroll-element:hover .scroll-bar {
-     background-color: red;
+     background-color: #7f7e7e;
  }
 .scroll-element.scroll-draggable .scroll-bar {
-     background-color: red;
+     background-color: #7f7e7e;
  }
