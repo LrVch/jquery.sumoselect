@@ -786,12 +786,14 @@
                     if (opt.selected != c) {
                         opt.selected = c;
                         var $opt = $(opt);
-                        if (!O.mob) $opt.data('li').toggleClass('selected', c);
+                        if (!O.mob) {
+                            $opt.data('li').toggleClass('selected', c);
 
-                        if ($opt.data('li').hasClass('selected')) {
-                            $opt.data('li').attr('aria-selected', true);
-                        } else {
-                            $opt.data('li').attr('aria-selected', false);
+                            if ($opt.data('li').hasClass('selected')) {
+                                $opt.data('li').attr('aria-selected', true);
+                            } else {
+                                $opt.data('li').attr('aria-selected', false);
+                            }
                         }
 
                         O.callChange();
@@ -892,7 +894,7 @@
                     var O = this;
                     O.select.before(O.E);
                     O.E.show();
-                    O.E.removeClass('SumoUnder');
+                    O.E.removeClass('SumoUnder, SelectClass');
                     var tabindex = O.CaptionCont.attr('tabindex');
 
                     if (tabindex !== 0) {
