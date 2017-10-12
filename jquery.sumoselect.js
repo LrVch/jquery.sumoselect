@@ -1,10 +1,9 @@
-/*!
- * jquery.sumoselect - v3.0.3
- * http://hemantnegi.github.io/jquery.sumoselect
- * 2016-12-12
+/*
+ * jquery.sumoselect - v3.1.0 fork from https://github.com/HemantNegi/jquery.sumoselect
+ * https://github.com/LrVch/jquery.sumoselect
+ * 2017-12-10
  *
- * Copyright 2015 Hemant Negi
- * Email : hemant.frnz@gmail.com
+ * Email : lrvchgost@gmail.com
  * Compressor http://refresh-sf.com/
  */
 
@@ -46,6 +45,45 @@
         if ($this.attr('data-sumoselect-prefix')) {
             attrSettings.prefix = $this.attr('data-sumoselect-prefix');
         }
+        if ($this.attr('data-sumoselect-csvDispCount')) {
+            attrSettings.csvDispCount = Number($this.attr('data-sumoselect-csvDispCount'));
+        }
+        if ($this.attr('data-sumoselect-floatWidth')) {
+            attrSettings.floatWidth = Number($this.attr('data-sumoselect-floatWidth'));
+        }
+        if ($this.attr('data-sumoselect-forceCustomRendering')) {
+            attrSettings.forceCustomRendering = $this.attr('data-sumoselect-forceCustomRendering') === 'true' ? true : false;
+        }
+        if ($this.attr('data-sumoselect-nativeOnDevice')) {
+            attrSettings.nativeOnDevice = $this.attr('data-sumoselect-nativeOnDevice').split(',');
+        }
+        if ($this.attr('data-sumoselect-outputAsCSV')) {
+            attrSettings.outputAsCSV = $this.attr('data-sumoselect-outputAsCSV') === 'true' ? true : false;
+        }
+        if ($this.attr('data-sumoselect-csvSepChar')) {
+            attrSettings.csvSepChar = $this.attr('data-sumoselect-csvSepChar');
+        }
+        if ($this.attr('data-sumoselect-okCancelInMulti')) {
+            attrSettings.okCancelInMulti = $this.attr('data-sumoselect-okCancelInMulti') === 'true' ? true : false;
+        }
+        if ($this.attr('data-sumoselect-isClickAwayOk')) {
+            attrSettings.isClickAwayOk = $this.attr('data-sumoselect-isClickAwayOk') === 'true' ? true : false;
+        }
+        if ($this.attr('data-sumoselect-triggerChangeCombined')) {
+            attrSettings.triggerChangeCombined = $this.attr('data-sumoselect-triggerChangeCombined') === 'true' ? true : false;
+        }
+        if ($this.attr('data-sumoselect-selectAll')) {
+            attrSettings.selectAll = $this.attr('data-sumoselect-selectAll') === 'true' ? true : false;
+        }
+        if ($this.attr('data-sumoselect-search')) {
+            attrSettings.search = $this.attr('data-sumoselect-search') === 'true' ? true : false;
+        }
+        if ($this.attr('data-sumoselect-up')) {
+            attrSettings.up = $this.attr('data-sumoselect-up') === 'true' ? true : false;
+        }
+        if ($this.attr('data-sumoselect-showTitle')) {
+            attrSettings.showTitle = $this.attr('data-sumoselect-showTitle') === 'true' ? true : false;
+        }
 
         // This is the easiest way to have default options.
         var settings = $.extend({
@@ -75,6 +113,7 @@
         var ret = this.each(function () {
             var selObj = this; // the original select object.
             if (this.sumo || !$(this).is('select')) return; //already initialized
+            var isCustomScroll = !!$.fn.scrollbar;
 
             this.sumo = {
                 E: $(selObj),   //the jquery object of original select element.
@@ -367,6 +406,10 @@
                     O.CaptionCont.attr('aria-expanded', true);
                     O.ul.attr('aria-expanded', true).attr('aria-hidden', false);
                     O.E.trigger('sumo:opened', O);
+
+                    if (isCustomScroll) {
+                        O.ul.scrollbar();
+                    }
 
                     // handle focus here
                     if (O.ftxt && !fromNav) {
