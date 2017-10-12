@@ -863,10 +863,16 @@
                                 }
                             });
                     } else {
+                        // console.log([].slice.call(O.E[0].querySelectorAll('option')).toString())
+                        $('.mob-view-cont').html('');
+                        var temp = [];
                         O.E.find('option:not(:disabled,:hidden)')
                             .each(function (i, e) {
+                                temp.push(e.value)
                                 e.selected = !!c;
                             });
+
+                        $('.mob-view-cont').html(temp.join(', '));
                     }
 
 
