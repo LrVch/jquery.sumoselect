@@ -841,8 +841,11 @@
                 // set direct=false/0 bypasses okCancelInMulti behaviour.
                 toggSelAll: function (c, direct) {
                     var O = this;
-                    var selItem = O.optDiv.find('li.sel');
-                    var selected = selItem.length ? selItem : O.ul.find('li[tabindex*="0"]');
+
+                    if (!O.mob) {
+                        var selItem = O.optDiv.find('li.sel');
+                        var selected = selItem.length ? selItem : O.ul.find('li[tabindex*="0"]');
+                    }
 
                     O.E.find('option:not(:disabled,:hidden)')
                         .each(function (ix, e) {
@@ -858,8 +861,10 @@
                         });
 
 
-                    O.optDiv.find('li.opt').removeClass('sel').attr('tabindex', '-1');
-                    selected.attr('tabindex', '0').focus();
+                    if (!O.mob) {
+                        O.optDiv.find('li.opt').removeClass('sel').attr('tabindex', '-1');
+                        selected.attr('tabindex', '0').focus();
+                    }
 
                     if (selItem.length) {
                         selected.addClass('sel');
