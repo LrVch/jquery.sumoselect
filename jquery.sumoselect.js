@@ -489,6 +489,8 @@
 
                     li = O.findNextLi(li);
 
+                    console.log('founded', li)
+
                     if (!li.length) return;
 
                     O.optDiv.find('li.sel').removeClass('sel').attr('tabindex', '-1');
@@ -502,11 +504,14 @@
                     var O = this, c,
                         s = O.ul.find('li.opt:not(.disabled, .hidden)'),
                         selItem = O.ul.find('li.opt.sel:not(.hidden)'),
-                        sel = selItem.length ? selItem : O.ul.find('li[tabindex*="0"]'),
+                        tabIndexItem = O.ul.find('li[tabindex*="0"]').not('.disabled').not('.hidden'),
+                        sel = selItem.length ? selItem : tabIndexItem,
                         idx = s.index(sel);
 
+                    console.log(sel)
+
                     if (O.is_opened && sel.length) {
-                        console.log('in if', sel.length)
+                        console.log('in if', sel)
                         if (up && idx > 0) {
                             c = s.eq(idx - 1);
                             console.log(idx)
