@@ -70,6 +70,14 @@
                 console.log("dropdown opened", o)
             });
 
+            $('.mob-view-clear').on('click', function (event) {
+                event.preventDefault();
+                $(this).next().html('');
+            });
+
+            if (isMobile()) {
+                $('.mob-view').css('display', 'block');
+            }
         });
 
         function getResult(s) {
@@ -82,7 +90,21 @@
                 }
             });
             console.log('value of select is: ', res.join(', '));
+            $('.mob-view-cont').html('value of select is: ' + res.join(', '));
         }
+
+        function isMobile() {
+            var dev = ['Android', 'BlackBerry', 'iPhone', 'iPad', 'iPod', 'Opera Mini', 'IEMobile', 'Silk'];
+
+            // Adapted from http://www.detectmobilebrowsers.com
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+
+            // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
+            for (var i = 0; i < dev.length; i++) if (ua.toString().toLowerCase().indexOf(dev[i].toLowerCase()) > 0) return dev[i];
+            return false;
+        }
+
+
     </script>
     <style type="text/css">
         body {
@@ -95,10 +117,43 @@
             padding: 0px;
             margin: 0px;
         }
+
+        .mob-view {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            padding-top: 15px;
+            border: 1px solid #000;
+            background: #fff;
+            color: #000;
+            font-size: 12px;
+            line-height: 14px;
+        }
+
+        .mob-view-clear {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 15px;
+            height: 15px;
+            background: #f00;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 <h1>Simple</h1>
+
+<div class="mob-view">
+    <span class="mob-view-clear">X</span>
+    <div class="mob-view-cont">
+        result will be here
+    </div>
+</div>
 &nbsp;&nbsp;&nbsp;
 <select name="somename" class="SlectBox"
         onchange="console.log('change is firing \n'); getResult(this)">
@@ -551,7 +606,8 @@ This is a inline select element
 <br/> <br/>
 <br/>
 
-<select tabindex="100" multiple="multiple" name="somename10" class="testselect10"
+<select tabindex="100" multiple="multiple" name="somename10"
+        class="testselect10"
         onchange="console.log('change is firing \n'); getResult(this)">
     <option value="volvo">Volvo</option>
     <option>Saab</option>
