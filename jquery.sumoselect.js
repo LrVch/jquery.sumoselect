@@ -244,7 +244,7 @@
 
                             case 9:  //tab
                                 return;
-                                // if (el.hasClass('btnOk')) return;
+                            // if (el.hasClass('btnOk')) return;
                             case 27: // esc
                                 O._cnbtn();
                                 O.hideOpts();
@@ -849,28 +849,36 @@
                         var selected = selItem.length ? selItem : O.ul.find('li[tabindex*="0"]');
                     }
 
-                    O.E.find('option:not(:disabled,:hidden)')
-                        .each(function (ix, e) {
-                            var is_selected = e.selected,
-                                e = $(e).data('li');
-                            if (e.hasClass('hidden'))return;
-                            if (!!c) {
-                                if (!is_selected) e.trigger('click');
-                            }
-                            else {
-                                if (is_selected) e.trigger('click');
-                            }
-                        });
+                    if (!O.mob) {
+                        O.E.find('option:not(:disabled,:hidden)')
+                            .each(function (i, e) {
+                                var is_selected = e.selected,
+                                    e = $(e).data('li');
+                                if (e.hasClass('hidden'))return;
+                                if (!!c) {
+                                    if (!is_selected) e.trigger('click');
+                                }
+                                else {
+                                    if (is_selected) e.trigger('click');
+                                }
+                            });
+                    } else {
+                        O.E.find('option:not(:disabled,:hidden)')
+                            .each(function (i, e) {
+                                e.selected = !!c;
+                            });
+                    }
 
 
                     if (!O.mob) {
                         O.optDiv.find('li.opt').removeClass('sel').attr('tabindex', '-1');
                         selected.attr('tabindex', '0').focus();
+
+                        if (selItem.length) {
+                            selected.addClass('sel');
+                        }
                     }
 
-                    if (selItem.length) {
-                        selected.addClass('sel');
-                    }
 
                     // for external use
                     if (!direct) {
