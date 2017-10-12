@@ -865,7 +865,7 @@
                     } else {
                         // console.log([].slice.call(O.E[0].querySelectorAll('option')).toString())
                         var temp = [];
-                        O.E.find('option:not(:disabled,:hidden)')
+                        O.E.find('option:not(:disabled)')
                             .each(function (i, e) {
                                 temp.push(e.value)
                                 e.selected = !!c;
