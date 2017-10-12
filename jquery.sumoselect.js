@@ -946,7 +946,9 @@
                     var O = this;
                     O.select.before(O.E);
                     O.E.show();
-                    O.E.removeClass('SumoUnder, SelectClass');
+                    O.E.removeClass('SelectClass');
+                    O.E.removeClass('SumoUnder');
+
                     var tabindex = O.CaptionCont.attr('tabindex');
 
                     if (tabindex !== 0) {
