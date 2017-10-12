@@ -871,8 +871,9 @@
                                 e.selected = !!c;
                             });
 
-                        $('.mob-view-cont').html(temp.join(', '));
-                        alert(temp.join(', '))
+                        // $('.mob-view-cont').html(temp.join(', '));
+                        // alert(temp.join(', '))
+                        alert(O.E.find('option:not(:disabled,:hidden)').length);
                     }
 
 
