@@ -684,7 +684,7 @@
 
                             if (li.hasClass('selected')) {
                                 li.attr('aria-selected', true);
-                                O.optDiv.find('li').attr('tabindex', '-1');
+                                O.optDiv.find('li.opt').attr('tabindex', '-1');
                             } else {
                                 li.attr('aria-selected', false);
                             }
