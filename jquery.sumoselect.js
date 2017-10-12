@@ -72,8 +72,6 @@
             showTitle: false               // set to false to prevent title (tooltip) from appearing
         }, options, attrSettings);
 
-        console.log(settings);
-
         var ret = this.each(function () {
             var selObj = this; // the original select object.
             if (this.sumo || !$(this).is('select')) return; //already initialized
@@ -489,8 +487,6 @@
 
                     li = O.findNextLi(li);
 
-                    console.log('founded', li)
-
                     if (!li.length) return;
 
                     O.optDiv.find('li.sel').removeClass('sel').attr('tabindex', '-1');
@@ -508,13 +504,9 @@
                         sel = selItem.length ? selItem : tabIndexItem,
                         idx = s.index(sel);
 
-                    console.log(sel)
-
                     if (O.is_opened && sel.length) {
-                        console.log('in if', sel)
                         if (up && idx > 0) {
                             c = s.eq(idx - 1);
-                            console.log(idx)
                         } else if (up && idx === 0 && settings.search) {
                             O.ftxt.focus();
                             return;
@@ -779,6 +771,7 @@
                 toggSel: function (c, i) {
                     var O = this;
                     var opt;
+
                     if (typeof(i) === "number") {
                         O.vRange(i);
                         opt = O.E.find('option')[i];
@@ -791,7 +784,14 @@
 
                     if (opt.selected != c) {
                         opt.selected = c;
-                        if (!O.mob) $(opt).data('li').toggleClass('selected', c);
+                        var $opt = $(opt);
+                        if (!O.mob) $opt.data('li').toggleClass('selected', c);
+
+                        if ($opt.data('li').hasClass('selected')) {
+                            $opt.data('li').attr('aria-selected', true);
+                        } else {
+                            $opt.data('li').attr('aria-selected', false);
+                        }
 
                         O.callChange();
                         O.setPstate();
@@ -805,7 +805,16 @@
                     var O = this.vRange(i);
                     O.E.find('option')[i].disabled = c;
                     if (c) O.E.find('option')[i].selected = false;
-                    if (!O.mob) O.optDiv.find('ul.options li').eq(i).toggleClass('disabled', c).removeClass('selected');
+                    if (!O.mob) {
+                        var $li = O.optDiv.find('ul.options li').eq(i);
+                        $li.toggleClass('disabled', c).removeClass('selected');
+
+                        if ($li.hasClass('disabled')) {
+                            $li.attr('aria-disabled', true);
+                        } else {
+                            $li.attr('aria-disabled', false);
+                        }
+                    }
                     O.setText();
                 },
 
@@ -817,11 +826,11 @@
 
                     if (val) {
                         O.E.attr('disabled', 'disabled');
-                        O.select.removeAttr('tabindex');
+                        O.CaptionCont.attr('aria-disabled', true);
                     }
                     else {
                         O.E.removeAttr('disabled');
-                        O.select.attr('tabindex', '0');
+                        O.CaptionCont.attr('aria-disabled', false);
                     }
 
                     return O;
@@ -877,6 +886,7 @@
                     var O = this;
                     O.select.before(O.E);
                     O.E.show();
+                    O.E.removeClass('SumoUnder');
 
                     if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
                         O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;

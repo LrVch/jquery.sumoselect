@@ -554,6 +554,10 @@ This is a inline select element
                            onclick="$('.testselect10')[0].sumo.unload();"/>
                 </li>
                 <li>
+                    <input id="Button2-1" type="button" value="Reload SumoSelect"
+                           onclick="$('.testselect10')[0].sumo.reload();"/>
+                </li>
+                <li>
                     <input id="Button3" type="button"
                            value="Add item at index 1"
                            onclick="$('.testselect10')[0].sumo.add('New Item',1);"/>
@@ -574,6 +578,16 @@ This is a inline select element
                            onclick="$('.testselect10')[0].sumo.unSelectItem(1);"/>
                 </li>
                 <li>
+                    <input id="Button6-1" type="button"
+                           value="Select all items"
+                           onclick="$('.testselect10')[0].sumo.selectAll();"/>
+                </li>
+                <li>
+                    <input id="Button6-2" type="button"
+                           value="UnSelect all items"
+                           onclick="$('.testselect10')[0].sumo.unSelectAll();"/>
+                </li>
+                <li>
                     <input id="Button7" type="button"
                            value="Disable item at index 1"
                            onclick="$('.testselect10')[0].sumo.disableItem(1);"/>
@@ -585,8 +599,14 @@ This is a inline select element
                 </li>
                 <li>
                     <input id="Button9" type="button"
-                           value="Toggle Enable disable"
-                           onclick="$('.testselect10')[0].sumo.disabled = !$('.testselect10')[0].sumo.disabled"/>
+                           value="DisableSumoSelect"
+                           onclick="$('.testselect10')[0].sumo.disable()"/>
+
+                </li>
+                <li>
+                    <input id="Button10" type="button"
+                           value="Enable SumoSelect"
+                           onclick="$('.testselect10')[0].sumo.enable()"/>
                 </li>
             </ul>
             <br/>
