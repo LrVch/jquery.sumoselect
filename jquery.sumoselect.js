@@ -676,7 +676,8 @@
                     var O = this;
                     O.placeholder = "";
                     if (O.is_multi) {
-                        var sels = O.E.find(':selected').not(':disabled'); //selected options.
+                        // var sels = O.E.find(':selected').not(':disabled'); //selected options.
+                        var sels = O.E.find(':selected'); //selected options.
 
                         for (var i = 0; i < sels.length; i++) {
                             if (i + 1 >= settings.csvDispCount && settings.csvDispCount) {
@@ -887,6 +888,13 @@
                     O.select.before(O.E);
                     O.E.show();
                     O.E.removeClass('SumoUnder');
+                    var tabindex = O.CaptionCont.attr('tabindex');
+
+                    if (tabindex !== 0) {
+                        O.E.attr('tabindex', tabindex);
+                    } else {
+                        O.E.attr('tabindex', '');
+                    }
 
                     if (settings.outputAsCSV && O.is_multi && O.select.find('input.HEMANT123').length) {
                         O.E.attr('name', O.select.find('input.HEMANT123').attr('name')); // restore the name;
