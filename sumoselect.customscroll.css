@@ -1,0 +1,67 @@
+.scroll-element {
+    border: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    z-index: 10;
+}
+.scroll-element div {
+    border: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    z-index: 10;
+    display: block;
+    height: 100%;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+
+.scroll-element.scroll-x {
+    bottom: 2px;
+    height: 8px;
+    left: 0;
+    width: 100%;
+}
+
+.scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_track {
+    left: -12px;
+}
+
+.scroll-element.scroll-x.scroll-scrolly_visible .scroll-element_size {
+    left: -12px;
+}
+
+.scroll-element.scroll-y {
+    height: 100%;
+    right: 5px;
+    top: 0;
+    width: 3px;
+}
+
+.scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_track {
+    top: -12px;
+}
+
+.scroll-element.scroll-y.scroll-scrollx_visible .scroll-element_size {
+    top: -12px;
+}
+
+.scroll-element .scroll-element_outer {
+    overflow: hidden;
+}
+
+.scroll-element .scroll-element_track {
+    background-color: grey;
+}
+.scroll-element .scroll-bar {
+    background-color: black;
+}
+
+.scroll-element:hover .scroll-bar {
+    background-color: black;
+}
+.scroll-element.scroll-draggable .scroll-bar {
+    background-color: black;
+}
