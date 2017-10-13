@@ -466,6 +466,7 @@
                 hideOpts: function () {
                     var O = this;
                     if (O.is_opened) {
+                        O.ul.scrollTop(0);
                         O.E.trigger('sumo:closing', O);
                         O.is_opened = false;
                         O.select.removeClass('open').find('ul li.sel').removeClass('sel').attr('tabindex', '-1');
