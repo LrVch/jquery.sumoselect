@@ -424,7 +424,7 @@
                         if (!O.select.is(e.target)                  // if the target of the click isn't the container...
                             && O.select.has(e.target).length === 0) { // ... nor a descendant of the container
                             if (!O.is_opened)return;
-                            O.hideOpts();
+                            O.hideOpts(true);
                             if (settings.okCancelInMulti) {
                                 if (settings.isClickAwayOk)
                                     O._okbtn();
@@ -463,7 +463,7 @@
 
                 // !!!!!!!!!!!!!!!
                 // скрывает дропдаун и устанавливает фокус на корень
-                hideOpts: function () {
+                hideOpts: function (outsie) {
                     var O = this;
                     if (O.is_opened) {
                         O.ul.scrollTop(0);
@@ -475,7 +475,10 @@
                         O.E.trigger('sumo:closed', O);
                         $(document).off('click.sumo');
                         $('body').removeClass('sumoStopScroll');
-                        O.CaptionCont.focus();
+
+                        if (!outsie) {
+                            O.CaptionCont.focus();
+                        }
 
                         // clear the search
                         if (settings.search) {
